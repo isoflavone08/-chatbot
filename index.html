@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>チャットボット</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>チャットボット</h2>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-content">こんにちは！何でも聞いてください。</div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                id="userInput" 
+                class="chat-input" 
+                placeholder="メッセージを入力..."
+                onkeypress="if(event.key === 'Enter') sendMessage()"
+            >
+            <button class="send-button" onclick="sendMessage()">送信</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
