@@ -1,11 +1,13 @@
+// 会話IDを保存するための簡易的なストレージ（本番環境では適切なDBを使用）
+const conversations = new Map();
+
 export default async function handler(req, res) {
-  // POSTリクエストのみ許可
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message } = req.body;
-
+  const { message, conversationId } = req.body;
+  
   try {
     const response = await fetch('https://api.dify.ai/v1/chat-messages', {
       method: 'POST',
@@ -17,7 +19,8 @@ export default async function handler(req, res) {
         inputs: {},
         query: message,
         response_mode: 'blocking',
-        user: 'user-' + Date.now()
+        conversation_id: conversationId || '',  // 会話IDを送信
+        user: 'web-user'  // 固定ユーザーID
       })
     });
 
@@ -27,7 +30,12 @@ export default async function handler(req, res) {
       throw new Error('API request failed');
     }
 
-    res.status(200).json({ answer: data.answer });
+    // 会話IDを返す
+    res.status(200).json({ 
+      answer: data.answer,
+      conversationId: data.conversation_id
+    });
+
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });
