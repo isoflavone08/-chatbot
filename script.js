@@ -1,30 +1,29 @@
-// Vercel版: サーバー経由でAPIを呼び出す
+// 会話IDを保持する変数
+let currentConversationId = '';
+
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     
     if (!message) return;
     
-    // ユーザーのメッセージを表示
     addMessage(message, 'user');
     input.value = '';
     
-    // ローディング表示
     const loadingId = addLoadingMessage();
     
     try {
-        // 自分のサーバー(Vercel)にリクエストを送信
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: message
+                message: message,
+                conversationId: currentConversationId  // 会話IDを送信
             })
         });
         
-        // ローディングを削除
         removeLoadingMessage(loadingId);
         
         if (!response.ok) {
@@ -33,7 +32,11 @@ async function sendMessage() {
         
         const data = await response.json();
         
-        // ボットの返答を表示
+        // 会話IDを保存
+        if (data.conversationId) {
+            currentConversationId = data.conversationId;
+        }
+        
         addMessage(data.answer, 'bot');
         
     } catch (error) {
@@ -43,7 +46,7 @@ async function sendMessage() {
     }
 }
 
-// メッセージを画面に追加する関数
+// 以下、他の関数は変更なし
 function addMessage(text, type) {
     const messagesContainer = document.getElementById('chatMessages');
     
@@ -57,11 +60,9 @@ function addMessage(text, type) {
     messageDiv.appendChild(contentDiv);
     messagesContainer.appendChild(messageDiv);
     
-    // 最新メッセージまでスクロール
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// ローディング表示を追加
 function addLoadingMessage() {
     const messagesContainer = document.getElementById('chatMessages');
     const loadingId = 'loading-' + Date.now();
@@ -81,7 +82,6 @@ function addLoadingMessage() {
     return loadingId;
 }
 
-// ローディング表示を削除
 function removeLoadingMessage(loadingId) {
     const loadingElement = document.getElementById(loadingId);
     if (loadingElement) {
@@ -89,7 +89,6 @@ function removeLoadingMessage(loadingId) {
     }
 }
 
-// Enterキーで送信できるようにする
 document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('userInput');
     input.addEventListener('keypress', function(event) {
