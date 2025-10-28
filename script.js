@@ -13,7 +13,7 @@ async function sendMessage() {
     const loadingId = addLoadingMessage();
     
     try {
-        // 自分のサーバー（Vercel）にリクエストを送信
+        // 自分のサーバー(Vercel)にリクエストを送信
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
