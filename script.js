@@ -1,8 +1,4 @@
-// ⚠️ セキュリティ注意: 本番環境では、APIキーをサーバー側で管理してください
-const API_KEY = 'ここにあなたのAPIキーを入力';
-const API_ENDPOINT = 'https://api.dify.ai/v1/chat-messages';
-
-// メッセージを送信する関数
+// Vercel版: サーバー経由でAPIを呼び出す
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
@@ -17,18 +13,14 @@ async function sendMessage() {
     const loadingId = addLoadingMessage();
     
     try {
-        // dify APIにリクエストを送信
-        const response = await fetch(API_ENDPOINT, {
+        // 自分のサーバー（Vercel）にリクエストを送信
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                inputs: {},
-                query: message,
-                response_mode: 'blocking',
-                user: 'user-' + Date.now()
+                message: message
             })
         });
         
@@ -66,43 +58,4 @@ function addMessage(text, type) {
     messagesContainer.appendChild(messageDiv);
     
     // 最新メッセージまでスクロール
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// ローディング表示を追加
-function addLoadingMessage() {
-    const messagesContainer = document.getElementById('chatMessages');
-    const loadingId = 'loading-' + Date.now();
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message bot-message';
-    messageDiv.id = loadingId;
-    
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    contentDiv.innerHTML = '<span class="loading"></span><span class="loading"></span><span class="loading"></span>';
-    
-    messageDiv.appendChild(contentDiv);
-    messagesContainer.appendChild(messageDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    return loadingId;
-}
-
-// ローディング表示を削除
-function removeLoadingMessage(loadingId) {
-    const loadingElement = document.getElementById(loadingId);
-    if (loadingElement) {
-        loadingElement.remove();
-    }
-}
-
-// Enterキーで送信できるようにする
-document.addEventListener('DOMContentLoaded', function() {
-    const input = document.getElementById('userInput');
-    input.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    });
-});
+    messagesContainer.scrollTop = messagesContainer.scrol
